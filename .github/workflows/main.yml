@@ -1,0 +1,37 @@
+name: Pipeline de Testing Automático
+
+# Esto le dice a GitHub que se active cada vez que subas código (push)
+on: [push]
+
+jobs:
+  ejecutar-pruebas:
+    # Usamos una computadora virtual con Linux (Ubuntu)
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descarga tu código en la computadora de GitHub
+      - name: Copiar código del repositorio
+        uses: actions/checkout@v4
+
+      # 2. Instala Python en esa computadora
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # 3. Instala las herramientas de prueba
+      - name: Instalar dependencias
+        run: |
+          pip install pytest pytest-html
+
+      # 4. Corre los tests y genera el reporte
+      - name: Ejecutar Tests
+        run: |
+          pytest --html=reporte_final.html --self-contained-html
+
+      # 5. Guarda el reporte para que lo puedas descargar después
+      - name: Subir reporte como evidencia
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencia-de-tests
+          path: reporte_final.html
